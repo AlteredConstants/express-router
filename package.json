@@ -2,6 +2,7 @@
 	"name": "@alteredconstants/express-router",
 	"version": "0.1.0",
 	"author": "Zeff Svoboda",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/AlteredConstants/express-router.git"
