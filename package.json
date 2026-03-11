@@ -17,7 +17,7 @@
 		"prepack": "bun run --sequential check test build",
 		"prebuild": "bun scripts/clean.ts",
 		"build": "tsgo",
-		"test": "bun test",
+		"test": "bun test --coverage",
 		"format": "prettier --write .",
 		"check:types": "tsgo --noEmit",
 		"check:test-types": "tsgo --noEmit --project tsconfig.test.json",

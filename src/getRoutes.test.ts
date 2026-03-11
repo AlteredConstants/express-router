@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { createRouter } from "./createRouter.js";
-import { getRoutes } from "./getRoutes.js";
+import { getRoutes, getRoutesGenerator } from "./getRoutes.js";
 import { setRouteRequestHandlerName } from "./setRouteRequestHandlerName.js";
 
 test("simple routes", () => {
@@ -16,7 +16,10 @@ test("simple routes", () => {
 			["put", "/api/bar", function barHandler() {}],
 		],
 	});
-	expect(getRoutes(router)).toEqual([
+
+	const routes = getRoutes(router);
+
+	expect(routes).toEqual([
 		{
 			method: "GET",
 			path: "/api/foo",
@@ -50,7 +53,10 @@ test("nested routers", () => {
 			["use", "/api/bar", childRouter],
 		],
 	});
-	expect(getRoutes(parentRouter)).toEqual([
+
+	const routes = getRoutes(parentRouter);
+
+	expect(routes).toEqual([
 		{
 			method: "GET",
 			path: "/api/foo",
@@ -85,7 +91,10 @@ test("messy paths", () => {
 			],
 		],
 	});
-	expect(getRoutes(router)).toEqual([
+
+	const routes = getRoutes(router);
+
+	expect(routes).toEqual([
 		{ method: "GET", path: "/api/foo", handlerNames: ["fooHandler"] },
 		{ method: "GET", path: "/api/bar/nest", handlerNames: ["barHandler"] },
 		{ method: "GET", path: "/api/baz/nest", handlerNames: ["bazHandler"] },
@@ -101,7 +110,6 @@ test("handler names", () => {
 		() => {},
 		"Any value is valid!",
 	);
-
 	const router = createRouter({
 		routes: [
 			[
@@ -118,7 +126,9 @@ test("handler names", () => {
 		],
 	});
 
-	expect(getRoutes(router)).toEqual([
+	const routes = getRoutes(router);
+
+	expect(routes).toEqual([
 		{
 			method: "GET",
 			path: "/api/foo",
@@ -133,4 +143,49 @@ test("handler names", () => {
 			],
 		},
 	]);
+});
+
+test("generator", () => {
+	const childRouter = createRouter({
+		middleware: [function childMiddleware() {}],
+		routes: [
+			["post", "/one", function barOneHandler() {}],
+			["delete", "/two", function barTwoHandler() {}],
+		],
+	});
+	const parentRouter = createRouter({
+		middleware: [function parentMiddleware() {}],
+		routes: [
+			["get", "/api/foo", function fooHandler() {}],
+			["use", "/api/bar", childRouter],
+		],
+	});
+
+	const generator = getRoutesGenerator(parentRouter);
+
+	expect(generator.next()).toEqual({
+		done: false,
+		value: {
+			method: "GET",
+			path: "/api/foo",
+			handlerNames: ["parentMiddleware", "fooHandler"],
+		},
+	});
+	expect(generator.next()).toEqual({
+		done: false,
+		value: {
+			method: "POST",
+			path: "/api/bar/one",
+			handlerNames: ["parentMiddleware", "childMiddleware", "barOneHandler"],
+		},
+	});
+	expect(generator.next()).toEqual({
+		done: false,
+		value: {
+			method: "DELETE",
+			path: "/api/bar/two",
+			handlerNames: ["parentMiddleware", "childMiddleware", "barTwoHandler"],
+		},
+	});
+	expect(generator.next()).toEqual({ done: true, value: undefined });
 });
