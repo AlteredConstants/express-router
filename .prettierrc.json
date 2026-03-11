@@ -1,0 +1,13 @@
+{
+	"plugins": ["@trivago/prettier-plugin-sort-imports"],
+
+	"experimentalOperatorPosition": "start",
+	"experimentalTernaries": true,
+	"objectWrap": "collapse",
+	"useTabs": true,
+
+	"importOrder": ["^[./]"],
+	"importOrderCaseInsensitive": true,
+	"importOrderSideEffects": false,
+	"importOrderSortSpecifiers": true
+}

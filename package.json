@@ -1,0 +1,41 @@
+{
+	"name": "@alteredconstants/express-router",
+	"version": "0.1.0",
+	"author": "Zeff Svoboda",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AlteredConstants/express-router.git"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/exports.js",
+			"types": "./dist/exports.d.ts"
+		}
+	},
+	"scripts": {
+		"prepack": "bun run --sequential check test build",
+		"prebuild": "bun scripts/clean.ts",
+		"build": "tsgo",
+		"test": "AC_EXPRESS_ROUTER_TRACKING=true bun test",
+		"format": "prettier --write .",
+		"check:types": "tsgo --noEmit",
+		"check:test-types": "tsgo --noEmit --project tsconfig.test.json",
+		"check:format": "prettier --check --log-level warn .",
+		"check": "bun run --parallel 'check:*'"
+	},
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "6.0.2",
+		"@types/bun": "latest",
+		"@types/express": "^5",
+		"@typescript/native-preview": "^7.0.0-dev.20260310.1",
+		"prettier": "3.8.1",
+		"typescript": "^5.9.3"
+	},
+	"peerDependencies": {
+		"express": "^5"
+	},
+	"engines": {
+		"bun": ">=1.3.9"
+	}
+}
