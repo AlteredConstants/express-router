@@ -2,6 +2,13 @@ import { Router as ExpressRouter } from "express";
 import { routerMetadata } from "./routerMetadata.js";
 import type { Router, RouterConfig } from "./types.js";
 
+/**
+ * Creates an Express `Router` using the provided configuration and stores the
+ * configuration for later inspection.
+ *
+ * @param config - The configuration used to create the router's routes.
+ * @returns The new Express `Router` object.
+ */
 export function createRouter(config: RouterConfig) {
 	const router: Router = ExpressRouter({ mergeParams: true });
 

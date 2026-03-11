@@ -3,11 +3,20 @@ import type { RequestHandler, Router } from "./types.js";
 
 /**
  * Gets information about each route within the router, including nested routes.
+ *
+ * @param router - The router to inspect.
+ * @returns An array of routes.
  */
 export function getRoutes(router: Router) {
 	return Array.from(getRoutesGeneratorWithContext(router));
 }
 
+/**
+ * Gets information about each route within the router, including nested routes.
+ *
+ * @param router - The router to inspect.
+ * @returns An interable/iterator for generating each route.
+ */
 export function getRoutesGenerator(router: Router) {
 	return getRoutesGeneratorWithContext(router);
 }
@@ -15,7 +24,7 @@ export function getRoutesGenerator(router: Router) {
 function* getRoutesGeneratorWithContext(
 	router: Router,
 	parent: ParentContext = { path: "", middleware: [] },
-): Generator<Route, void> {
+): Generator<Route, void, void> {
 	if (!router[routerMetadata]) {
 		return;
 	}
@@ -45,9 +54,17 @@ function* getRoutesGeneratorWithContext(
 	}
 }
 
+/** Information about the route. */
 type Route = {
+	/** The HTTP request method. */
 	readonly method: string;
+	/** The full route path. */
 	readonly path: string;
+	/**
+	 * The names of every middleware and handler applied to the route. If a name
+	 * is not available for the handler, the item in the array will be
+	 * `undefined`.
+	 */
 	readonly handlerNames: ReadonlyArray<string | undefined>;
 };
 
