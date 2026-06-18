@@ -15,7 +15,7 @@ export function getRoutes(router: Router) {
  * Gets information about each route within the router, including nested routes.
  *
  * @param router - The router to inspect.
- * @returns An interable/iterator for generating each route.
+ * @returns An iterable/iterator for generating each route.
  */
 export function getRoutesGenerator(router: Router) {
 	return getRoutesGeneratorWithContext(router);
@@ -55,7 +55,7 @@ function* getRoutesGeneratorWithContext(
 }
 
 /** Information about the route. */
-type Route = {
+export type Route = {
 	/** The HTTP request method. */
 	readonly method: string;
 	/** The full route path. */
@@ -64,6 +64,9 @@ type Route = {
 	 * The names of every middleware and handler applied to the route. If a name
 	 * is not available for the handler, the item in the array will be
 	 * `undefined`.
+	 *
+	 * Use `setRouteRequestHandlerName` to manually specify a name such as for
+	 * dynamically generated handler functions.
 	 */
 	readonly handlerNames: ReadonlyArray<string | undefined>;
 };
