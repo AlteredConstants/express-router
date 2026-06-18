@@ -13,8 +13,8 @@ import type { RequestHandler } from "./types.js";
  * @param name - The name to store with the handler.
  * @returns The same handler function.
  */
-export function setRouteRequestHandlerName(
-	handler: RequestHandler,
+export function setRouteRequestHandlerName<T extends RequestHandler>(
+	handler: T,
 	name: string,
 ) {
 	if (process.env["AC_EXPRESS_ROUTER_TRACKING"]) {

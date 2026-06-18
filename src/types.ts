@@ -40,6 +40,9 @@ export type Router = ExpressRouter & {
 };
 
 /** An Express request handler. */
-export type RequestHandler = ExpressRequestHandler & {
-	[routerMetadata]?: { readonly name?: string };
-};
+export type RequestHandler =
+	// We don't expect any particular handler param type, so use `never` to make
+	// any other type assignable to this.
+	ExpressRequestHandler<never> & {
+		[routerMetadata]?: { readonly name?: string };
+	};
