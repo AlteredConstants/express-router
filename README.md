@@ -20,14 +20,23 @@ npm install express
 
 ```javascript
 // routes.js
-import { createRouter } from "@alteredconstants/express-router";
+import {
+	createRouter,
+	setRouteRequestHandlerName,
+} from "@alteredconstants/express-router";
 
 // Define your middleware however you'd like.
 const users = [{ id: 1, name: "Steve" }];
 const products = [{ id: 1, name: "Golden Apple" }];
-const validateUser = (req, res, next) => next();
-const canUseProducts = (req, res, next) => next();
-const canAddProduct = (req, res, next) => next();
+const authUser = (req, res, next) => next();
+const authProducts = (type) =>
+	// Use this function to set a dynamic handler name in the output.
+	setRouteRequestHandlerName(
+		(req, res, next) => next(),
+		`authProducts(${type})`,
+	);
+const canViewProducts = authProducts("view");
+const canAddProduct = authProducts("add");
 const getUsers = (req, res) => res.send(users);
 const getProducts = (req, res) => res.send(products);
 const getProduct = (req, res) => res.send(product[0]);
@@ -35,7 +44,7 @@ const addProduct = (req, res) => res.send({ message: "Added!" });
 
 // Create and compose routers together.
 const productsRouter = createRouter({
-	middleware: [canUseProducts],
+	middleware: [canViewProducts],
 	routes: [
 		["get", "/", getProducts],
 		["post", "/", canAddProduct, addProduct],
@@ -43,7 +52,7 @@ const productsRouter = createRouter({
 	],
 });
 export const appRouter = createRouter({
-	middleware: [validateUser],
+	middleware: [authUser],
 	routes: [
 		["get", "/api/users", getUsers],
 		["use", "/api/products", productsRouter],
@@ -83,8 +92,8 @@ AC_EXPRESS_ROUTER_TRACKING=true node print-routes.js
 It will generate this output for this example:
 
 ```
-GET /api/users [validateUser, getUsers]
-GET /api/products [validateUser, canUseProducts, getProducts]
-POST /api/products [validateUser, canUseProducts, canAddProduct, addProduct]
-GET /api/products/:id [validateUser, canUseProducts, getProduct]
+GET /api/users [authUser, getUsers]
+GET /api/products [authUser, authProducts(view), getProducts]
+POST /api/products [authUser, authProducts(view), authProducts(add), addProduct]
+GET /api/products/:id [authUser, authProducts(view), getProduct]
 ```
